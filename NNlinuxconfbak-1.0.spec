@@ -1,7 +1,7 @@
 %define name        NNlinuxconfbak
 %define buildroot   %{_topdir}/%{name}-%{version}-%{release}-buildroot
 %define LINKDIR     /usr/local/bin
-%define release     1
+%define release     2
 %define version     1.0
 BuildRoot:      %{buildroot}
 
@@ -45,6 +45,21 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/chkconfig "%{name}" on
 /etc/init.d/%{name} start
 
+%preun
+# Pre uninstall action
+case "$1" in
+  0)
+    # This is an un-installation.
+    /etc/init.d/%{name} stop
+    chkconfig --del %{name}
+  ;;
+  1)
+    # This is an upgrade.
+    # Do nothing.
+    :
+  ;;
+esac
+
 
 %files
 %defattr(-,root,root)
@@ -53,5 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(750, root, root) /etc/init.d/%{name}
 
 %changelog
+* Wed Aug 15 2018 - DM
+- add preun section and upgrade release to 2
 * Fri Aug 10 2018 - DM
 - New rpm for linuxconfbackup
