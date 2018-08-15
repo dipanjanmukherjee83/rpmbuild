@@ -1,5 +1,5 @@
 %define name        wget 
-%define release     4
+%define release     5
 %define version     1.19.4
 %define buildroot   %{_topdir}/%{name}-%{version}-%{release}-buildroot
 %define LINKDIR     /usr/local/bin 
@@ -14,6 +14,7 @@ Group:		Development/Tools
 License:	GPL
 Source0:	%{name}-%{version}.tar.gz
 Requires:	gnutls gnutls-devel glibc-devel glibc-headers kernel-headers kernel-devel
+Packager:       Dipanjan Mukherjee
 
 %description
 The GNU wget program downloads files from the Internet using the command-line.
@@ -42,8 +43,20 @@ echo "All done Dipanjan"
 ln -fs $RPM_BUILD_ROOT/opt/%{name}-%{version}.%{release}/bin/%{name} ${RPM_BUILD_ROOT}%{LINKDIR}/%{name}
 
 %postun
-#=========================== Deletion of Symbolic links
-rm -f ${RPM_BUILD_ROOT}%{LINKDIR}/%{name}
+#==Deletion of Symbolic links and opt dir
+
+case "$1" in
+  0)
+    # This is an un-installation.
+    rm -f ${RPM_BUILD_ROOT}%{LINKDIR}/%{name}
+    rm -rf /opt/%{name}-%{version}.%{release}
+  ;;
+  1)
+    # This is an upgrade.
+    # Do nothing.
+    :
+  ;;
+esac
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -54,6 +67,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/*
 
 %changelog
+* Wed Aug 15 2018 - DM
+- add delete /opt in postun section and packager name and upgrade release
 * Sat Aug 11 2018 - DM
 - final cleanup
 * Fri Aug 10 2018 - DM
